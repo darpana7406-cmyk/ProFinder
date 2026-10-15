@@ -1,27 +1,29 @@
-SECRET_KEY = 'profinder-secret-key-2025'
+import os
+from dotenv import load_dotenv
 
-MYSQL_HOST = 'localhost'
-MYSQL_USER = 'root'
-MYSQL_PASSWORD = 'Darpana@07'
-MYSQL_DB = 'profinder_db'
-MYSQL_CHARSET = 'utf8mb4'
+load_dotenv()
 
 # ============================================
-# EMAIL CONFIG (Optional — for real email sending)
+# SECURITY
 # ============================================
-# To enable real emails:
-#   1. Gmail account
-#   2. Enable 2-Step Verification
-#   3. Generate App Password
-#   4. Fill fields below + set MAIL_ENABLED = True
-#
-# For demo: leave MAIL_ENABLED = False (notifications logged to DB)
+SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-me')
 
-MAIL_ENABLED = False
+# ============================================
+# DATABASE
+# ============================================
+MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
+MYSQL_USER = os.getenv('MYSQL_USER', 'root')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
+MYSQL_DB = os.getenv('MYSQL_DB', 'profinder_db')
+MYSQL_CHARSET = os.getenv('MYSQL_CHARSET', 'utf8mb4')
 
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 587
-MAIL_USE_TLS = True
-MAIL_USERNAME = 'your-email@gmail.com'
-MAIL_PASSWORD = 'your-16-char-app-password'
-MAIL_DEFAULT_SENDER = 'your-email@gmail.com'
+# ============================================
+# EMAIL (optional)
+# ============================================
+MAIL_ENABLED = os.getenv('MAIL_ENABLED', 'False').lower() == 'true'
+MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+MAIL_PORT = int(os.getenv('MAIL_PORT', '587'))
+MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True').lower() == 'true'
+MAIL_USERNAME = os.getenv('MAIL_USERNAME', '')
+MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', '')
+MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', '')
