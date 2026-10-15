@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Coupons - ProFinder{% endblock %}
+
+{% block content %}
+<h1>Available Coupons</h1>
+<p style="color: #7f8c8d;">Use these codes during booking to save money.</p>
+
+<div class="results-grid">
+    {% for c in coupons %}
+    <div class="provider-card" style="border-left: 4px solid #27ae60;">
+        <h2 style="color: #27ae60; font-family: monospace; letter-spacing: 2px;">{{ c.Code }}</h2>
+        <p style="font-size: 1.1rem; color: #2c3e50;">
+            {% if c.DiscountType == 'percent' %}
+                <strong>{{ c.DiscountValue }}% OFF</strong>
+                {% if c.MaxDiscount %}(max &#8377;{{ c.MaxDiscount }}){% endif %}
+            {% else %}
+                <strong>&#8377;{{ c.DiscountValue }} OFF</strong>
+            {% endif %}
+        </p>
+        <p>{{ c.Description }}</p>
+        <p style="font-size: 0.85rem; color: #7f8c8d;">
+            {% if c.MinOrderValue > 0 %}Min order: &#8377;{{ c.MinOrderValue }}<br>{% endif %}
+            Valid till: {{ c.ValidTill }}
+            {% if c.UsageLimit %} &middot; {{ c.UsageLimit - c.UsedCount }} uses left{% endif %}
+        </p>
+    </div>
+    {% else %}
+    <p>No active coupons right now.</p>
+    {% endfor %}
+</div>
+{% endblock %}

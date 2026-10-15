@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}My Favorites - ProFinder{% endblock %}
+
+{% block content %}
+<h1>My Favorites ❤️</h1>
+
+{% if favorites %}
+<div class="results-grid">
+    {% for p in favorites %}
+    <div class="provider-card">
+        <h3>{{ p.Name }} {% if p.ReviewCount > 0 %}✅{% endif %}</h3>
+        <p class="rating">⭐ {{ p.AvgRating }} ({{ p.ReviewCount }} reviews)</p>
+        <p>📍 {{ p.City }}</p>
+        <p>Experience: {{ p.ExperienceYears }} years</p>
+        <p style="font-size: 0.8rem; color: #95a5a6;">Saved on {{ p.AddedAt }}</p>
+        <a href="{{ url_for('professional_detail', pid=p.ProviderID) }}" class="btn-primary">View Profile</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align: center; padding: 3rem 1rem;">
+    <h3 style="color: #7f8c8d;">No favorites yet</h3>
+    <p style="color: #95a5a6; margin: 1rem 0;">Click ❤️ on any provider profile to save them here.</p>
+    <a href="{{ url_for('search') }}" class="btn-primary">Find Professionals</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}My Searches - ProFinder{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <h1>My Search History</h1>
+    {% if entries %}
+    <form action="{{ url_for('clear_searches') }}" method="POST">
+        <button type="submit" class="btn-danger" onclick="return confirm('Clear all search history?')">Clear All</button>
+    </form>
+    {% endif %}
+</div>
+
+{% if entries %}
+    {% for entry in entries %}
+    <div class="booking-card" style="padding: 1rem;">
+        <p style="font-family: monospace; color: #2c3e50;">{{ entry }}</p>
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="text-align: center; padding: 3rem 1rem;">
+        <h3 style="color: #7f8c8d;">No search history yet</h3>
+        <p style="color: #95a5a6; margin: 1rem 0;">Your searches will appear here.</p>
+        <a href="{{ url_for('search') }}" class="btn-primary">Start Searching</a>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Booking #{{ booking.BookingID }} - ProFinder{% endblock %}
+
+{% block content %}
+<h1>Booking #{{ booking.BookingID }}</h1>
+
+<div class="booking-card" style="max-width: 700px;">
+    <h2>{{ booking.ServiceName }}
+        {% if extra_services and extra_services|length > 1 %}
+        <span style="background: #3498db; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem;">{{ extra_services|length }} services</span>
+        {% endif %}
+    </h2>
+
+    {% if extra_services and extra_services|length > 1 %}
+    <h3>All Services in This Booking</h3>
+    {% for s in extra_services %}
+    <p>• {{ s.ServiceName }} ({{ s.CategoryName }}) — ₹{{ s.PricePerHour }}/hr</p>
+    {% endfor %}
+    <p style="margin-top: 0.5rem;"><strong>Total: ₹{{ booking.TotalPrice }}</strong></p>
+    {% else %}
+    <p>{{ booking.ServiceDesc }}</p>
+    <p class="price">₹{{ booking.PricePerHour }}/hr</p>
+    {% endif %}
+
+    <hr style="margin: 1rem 0;">
+
+    <h3>Provider</h3>
+    <p>{{ booking.ProviderName }} · 📞 {{ booking.ProviderPhone }}</p>
+
+    <h3>Customer</h3>
+    <p>{{ booking.CustomerName }} · 📞 {{ booking.CustomerPhone }}</p>
+
+    <h3>Schedule</h3>
+    <p>📅 {{ booking.BookingDate }} at {{ booking.BookingTime }}</p>
+
+    <h3>Status</h3>
+    <p><span class="status-{{ booking.Status|lower }}">{{ booking.Status }}</span>
+        {% if booking.IsEmergency %} 🚨 Emergency{% endif %}
+        {% if booking.CancelledBy %} (by {{ booking.CancelledBy }}){% endif %}
+    </p>
+
+    {% if session.role == 'provider' %}
+    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        {% if booking.Status == 'Pending' %}
+            <a href="{{ url_for('accept_booking', bid=booking.BookingID) }}" class="btn-primary">✓ Accept</a>
+            <a href="{{ url_for('reject_booking', bid=booking.BookingID) }}" class="btn-danger">✗ Reject</a>
+        {% elif booking.Status == 'Confirmed' %}
+            <a href="{{ url_for('complete_booking', bid=booking.BookingID) }}" class="btn-primary">Mark Completed</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if review %}
+    <hr style="margin: 1rem 0;">
+    <h3>Your Review</h3>
+    <p>⭐ {{ review.Rating }} — {{ review.Comment }}</p>
+    {% endif %}
+</div>
+
+<div style="text-align: center; margin: 2rem;">
+    <a href="{{ url_for('dashboard') }}" class="btn-primary">← Back to Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My Wallet - ProFinder{% endblock %}
+
+{% block content %}
+<h1>My Wallet</h1>
+
+<div style="background: linear-gradient(135deg, #27ae60, #16a085); color: white; padding: 2rem; border-radius: 12px; margin: 1.5rem 0; text-align: center;">
+    <p style="margin: 0; opacity: 0.9;">Available Balance</p>
+    <h2 style="font-size: 3rem; margin: 0.5rem 0;">₹{{ '%.2f' % balance }}</h2>
+    <a href="{{ url_for('wallet_add') }}" class="btn-primary" style="background: white; color: #27ae60; margin-top: 1rem; display: inline-block;">+ Add Money</a>
+</div>
+
+<h2>Transaction History</h2>
+
+{% if transactions %}
+    {% for t in transactions %}
+    <div class="booking-card" style="border-left: 4px solid {% if t.Type == 'credit' %}#27ae60{% else %}#e74c3c{% endif %};">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <p style="margin: 0;"><strong>{{ t.Description or 'Transaction' }}</strong></p>
+                <small style="color: #95a5a6;">{{ t.TxnDate }}{% if t.BookingID %} · Booking #{{ t.BookingID }}{% endif %}</small>
+            </div>
+            <h3 style="color: {% if t.Type == 'credit' %}#27ae60{% else %}#e74c3c{% endif %}; margin: 0;">
+                {% if t.Type == 'credit' %}+{% else %}-{% endif %}₹{{ '%.2f' % t.Amount }}
+            </h3>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<p style="text-align: center; color: #95a5a6; padding: 2rem;">No transactions yet.</p>
+{% endif %}
+{% endblock %}

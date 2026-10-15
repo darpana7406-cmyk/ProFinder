@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ provider.FirstName }} - ProFinder{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>{{ provider.FirstName }} {{ provider.LastName }}
+            {% if provider.IsVerified %}✅ Verified{% endif %}
+        </h1>
+        <p class="rating">
+            ⭐ {{ stats.LiveAvg or provider.AvgRating }}/5
+            {% if stats.Cnt > 0 %}· {{ stats.Cnt }} review{% if stats.Cnt != 1 %}s{% endif %}{% else %}· No reviews yet{% endif %}
+        </p>
+        <p>📍 {{ provider.City }}, {{ provider.State }}</p>
+        <p>📞 {{ provider.Phone }}</p>
+        <p>Experience: {{ provider.ExperienceYears }} years</p>
+        {% if provider.Description %}
+        <p style="margin-top: 1rem; color: #7f8c8d;">{{ provider.Description }}</p>
+        {% endif %}
+
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="{{ url_for('contact_provider', pid=provider.ProviderID) }}" class="btn-primary">📞 Contact</a>
+            {% if session.role == 'customer' %}
+                <a href="{{ url_for('chat_start', provider_id=provider.ProviderID) }}" class="btn-primary">💬 Chat</a>
+                <a href="{{ url_for('multi_book', provider_id=provider.ProviderID) }}" class="btn-primary">📦 Book Multiple</a>
+                <a href="{{ url_for('toggle_favorite', pid=provider.ProviderID) }}"
+                   class="btn-{% if is_fav %}danger{% else %}primary{% endif %}">
+                    {% if is_fav %}❤️ Remove Favorite{% else %}🤍 Add Favorite{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="services-section">
+        <h2>Services Offered</h2>
+        {% for s in services %}
+        <div class="service-card">
+            <h3>{{ s.ServiceName }}</h3>
+            <p>{{ s.Description }}</p>
+            <p class="price">₹{{ s.PricePerHour }}/hr</p>
+            {% if session.role == 'customer' %}
+            <a href="{{ url_for('book_service', provider_id=provider.ProviderID, service_id=s.ServiceTypeID) }}"
+               class="btn-primary">Book This</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if slots %}
+    <div class="availability-section">
+        <h2>Upcoming Availability</h2>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+            {% for s in slots %}
+            <div style="background: #eafaf1; border-left: 4px solid #27ae60; padding: 0.6rem 1rem; border-radius: 6px;">
+                <strong>{{ s.AvailableDate }}</strong><br>{{ s.StartTime }} – {{ s.EndTime }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="reviews-section">
+        <h2>Recent Reviews</h2>
+        {% for r in reviews %}
+        <div class="review-card">
+            <strong>{{ r.CustomerName }}</strong> — ⭐ {{ r.Rating }}
+            <p>{{ r.Comment }}</p>
+            <small>{{ r.ReviewDate }}</small>
+        </div>
+        {% else %}
+        <p>No reviews yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

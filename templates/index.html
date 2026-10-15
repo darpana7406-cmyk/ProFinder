@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}ProFinder - Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Find. Compare. Connect. Get It Done.</h1>
+    <p>Discover verified professionals across 12 service categories</p>
+    <form action="{{ url_for('search') }}" method="GET" class="search-form">
+        <input type="text" name="service" placeholder="What service do you need?">
+        <input type="text" name="city" placeholder="City (e.g. Mumbai, Pune)">
+        <button type="submit" class="btn-primary">Search</button>
+    </form>
+</section>
+
+<section>
+    <h2>Browse Categories</h2>
+    <div class="category-grid">
+        {% for cat in categories %}
+        <a href="{{ url_for('search', category=cat.CategoryName) }}" class="category-card">
+            <h3>{{ cat.CategoryName }}</h3>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <h2>Top Rated Professionals</h2>
+    <div class="provider-grid">
+        {% for p in providers %}
+        <div class="provider-card">
+            <h3>{{ p.Name }} {% if p.ReviewCount > 0 %}✅{% endif %}</h3>
+            <p class="rating">
+                ⭐ {{ p.AvgRating }}
+                {% if p.ReviewCount > 0 %}({{ p.ReviewCount }} review{% if p.ReviewCount != 1 %}s{% endif %}){% else %}(new){% endif %}
+            </p>
+            <p>{{ p.ServiceName }}</p>
+            <p>📍 {{ p.City }}</p>
+            <p class="price">₹{{ p.PricePerHour }}/hr</p>
+            <a href="{{ url_for('professional_detail', pid=p.ProviderID) }}" class="btn-primary">View Profile</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

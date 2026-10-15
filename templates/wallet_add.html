@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Add Money - ProFinder{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Add Money to Wallet</h2>
+    <p style="color: #7f8c8d;">Top up your ProFinder wallet to book services instantly.</p>
+
+    <form method="POST">
+        <div class="form-group">
+            <label>Amount (₹)</label>
+            <input type="number" name="amount" min="1" max="50000" step="1" required placeholder="e.g. 500">
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            <button type="button" class="btn-primary" onclick="document.querySelector('input[name=amount]').value=100">₹100</button>
+            <button type="button" class="btn-primary" onclick="document.querySelector('input[name=amount]').value=500">₹500</button>
+            <button type="button" class="btn-primary" onclick="document.querySelector('input[name=amount]').value=1000">₹1000</button>
+            <button type="button" class="btn-primary" onclick="document.querySelector('input[name=amount]').value=5000">₹5000</button>
+        </div>
+        <button type="submit" class="btn-primary">Add Money</button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="{{ url_for('wallet') }}">← Back to Wallet</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}You've been invited! - ProFinder{% endblock %}
+
+{% block content %}
+<div class="form-container" style="max-width: 600px; text-align: center;">
+    <h1 style="color: #9b59b6;">You've been invited!</h1>
+    <p style="font-size: 1.1rem;">
+        <strong>{{ referrer.Name }}</strong> invited you to join ProFinder.
+    </p>
+    <p style="color: #7f8c8d;">
+        Sign up using code <strong style="font-family: monospace; color: #27ae60;">{{ code }}</strong>
+        and both of you get <strong>₹100</strong> credited to your wallet!
+    </p>
+
+    <div style="background: #f0e5ff; padding: 1rem; border-radius: 8px; margin: 1.5rem 0;">
+        <strong>Your Referral Code is applied automatically when you register below.</strong>
+    </div>
+
+    <a href="{{ url_for('register') }}" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+        Create My Account
+    </a>
+
+    <p style="margin-top: 2rem; color: #95a5a6; font-size: 0.85rem;">
+        Already have an account? <a href="{{ url_for('login') }}">Login instead</a>
+    </p>
+</div>
+{% endblock %}

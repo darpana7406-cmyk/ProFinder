@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Manage Reviews - Admin{% endblock %}
+
+{% block content %}
+<h1>Manage Reviews</h1>
+<p style="color: #7f8c8d;">Approve or hide reviews. Hidden reviews are excluded from ratings.</p>
+
+{% for r in reviews %}
+<div class="review-card" style="border-left: 4px solid {% if r.IsApproved %}#27ae60{% else %}#e74c3c{% endif %};">
+    <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem; flex-wrap: wrap;">
+        <div style="flex: 1;">
+            <p style="margin: 0;">
+                <strong>From:</strong> {{ r.CustomerName }}
+                &nbsp;→&nbsp;
+                <strong>To:</strong> {{ r.ProviderName }}
+            </p>
+            <p style="margin: 0.4rem 0;">⭐ {{ r.Rating }} — {{ r.Comment }}</p>
+            <small style="color: #95a5a6;">{{ r.ReviewDate }} · Review #{{ r.ReviewID }}</small>
+        </div>
+        <div style="text-align: right;">
+            <span class="status-{% if r.IsApproved %}completed{% else %}cancelled{% endif %}">
+                {% if r.IsApproved %}✅ Approved{% else %}❌ Hidden{% endif %}
+            </span>
+            <div style="margin-top: 0.5rem;">
+                <a href="{{ url_for('toggle_review', rid=r.ReviewID) }}" class="btn-primary">
+                    {% if r.IsApproved %}Hide{% else %}Approve{% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<p>No reviews to moderate.</p>
+{% endfor %}
+
+<div style="text-align: center; margin: 2rem;">
+    <a href="{{ url_for('dashboard') }}" class="btn-primary">← Back to Dashboard</a>
+</div>
+{% endblock %}

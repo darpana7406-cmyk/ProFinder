@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Receipt #{{ booking.BookingID }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+    <div style="text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 1rem;">
+        <h1 style="margin: 0;">ProFinder</h1>
+        <p style="margin: 0.3rem 0; color: #7f8c8d;">Booking Receipt</p>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <p><strong>Receipt #:</strong> PRO-{{ '%05d' % booking.BookingID }}</p>
+        <p><strong>Date:</strong> {{ booking.BookingDate }} at {{ booking.BookingTime }}</p>
+        <p><strong>Status:</strong> <span class="status-{{ booking.Status|lower }}">{{ booking.Status }}</span></p>
+    </div>
+
+    <hr style="margin: 1.5rem 0;">
+
+    <h3>Services</h3>
+    {% if all_services and all_services|length > 1 %}
+        {% for s in all_services %}
+        <p>• {{ s.ServiceName }} — ₹{{ s.PricePerHour }}/hr</p>
+        {% endfor %}
+        <p style="margin-top: 1rem;"><strong>Subtotal: ₹{{ booking.TotalPrice + booking.DiscountApplied }}</strong></p>
+    {% else %}
+        <p>{{ booking.ServiceName }}</p>
+        <p>{{ booking.ServiceDesc }}</p>
+        <p><strong>Rate:</strong> ₹{{ booking.PricePerHour }}/hr</p>
+    {% endif %}
+
+    {% if booking.DiscountApplied and booking.DiscountApplied > 0 %}
+    <p style="color: #27ae60; margin-top: 0.5rem;">
+        <strong>Coupon ({{ booking.CouponCode }}): -₹{{ booking.DiscountApplied }}</strong>
+    </p>
+    {% endif %}
+
+    <p style="font-size: 1.3rem; margin-top: 1rem;"><strong>Total: ₹{{ booking.TotalPrice }}</strong></p>
+
+    <h3 style="margin-top: 1.5rem;">Provider</h3>
+    <p>{{ booking.ProviderName }} · 📞 {{ booking.ProviderPhone }}</p>
+    <p>📍 {{ booking.City }}, {{ booking.State }}</p>
+
+    <h3 style="margin-top: 1.5rem;">Customer</h3>
+    <p>{{ booking.CustomerName }} · 📞 {{ booking.CustomerPhone }}</p>
+
+    {% if booking.IsEmergency %}
+    <p style="margin-top: 1rem; color: #e74c3c;"><strong>🚨 Emergency Service</strong></p>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <button onclick="window.print()" class="btn-primary">🖨️ Print</button>
+        <a href="{{ url_for('booking_detail', bid=booking.BookingID) }}" class="btn-primary">← Back</a>
+    </div>
+
+    <p style="text-align: center; margin-top: 2rem; color: #95a5a6; font-size: 0.85rem;">
+        Thank you for using ProFinder!
+    </p>
+</div>
+{% endblock %}

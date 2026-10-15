@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Chat - ProFinder{% endblock %}
+
+{% block content %}
+<h1>Messages</h1>
+
+{% if conversations %}
+    {% for c in conversations %}
+    <a href="{{ url_for('chat_with', other_person_id=c.other_id) }}" style="text-decoration: none; color: inherit;">
+        <div class="booking-card" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <h3>{{ c.name }}</h3>
+                <p style="color: #7f8c8d; font-size: 0.9rem;">{{ c.last_msg[:60] }}{% if c.last_msg|length > 60 %}...{% endif %}</p>
+                <small style="color: #95a5a6;">{{ c.last_time }}</small>
+            </div>
+            <div>
+                {% if c.unread > 0 %}
+                <span style="background: #e74c3c; color: white; padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.85rem;">
+                    {{ c.unread }} new
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+{% else %}
+<div style="text-align: center; padding: 3rem 1rem;">
+    <h3 style="color: #7f8c8d;">No conversations yet</h3>
+    <p style="color: #95a5a6; margin: 1rem 0;">Start a chat from any provider profile.</p>
+    <a href="{{ url_for('search') }}" class="btn-primary">Find a Professional</a>
+</div>
+{% endif %}
+{% endblock %}

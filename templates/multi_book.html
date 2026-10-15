@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Book Multiple Services - {{ provider.Name }}{% endblock %}
+
+{% block content %}
+<div class="form-container" style="max-width: 700px;">
+    <h2>Book Multiple Services from {{ provider.Name }}</h2>
+    <p style="color: #7f8c8d;">Select one or more services. Total is calculated automatically.</p>
+
+    <form method="POST" id="multiBookForm">
+        <div class="form-group">
+            <label>Select Services</label>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; max-height: 300px; overflow-y: auto;">
+                {% for s in services %}
+                <label style="display: block; padding: 0.5rem 0; border-bottom: 1px solid #eee; cursor: pointer;">
+                    <input type="checkbox" name="service_type_id" value="{{ s.ServiceTypeID }}"
+                           data-price="{{ s.PricePerHour }}" class="svc-checkbox">
+                    <strong>{{ s.ServiceName }}</strong> ({{ s.CategoryName }}) — ₹{{ s.PricePerHour }}/hr
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" name="date" required min="{{ today }}">
+            </div>
+            <div class="form-group">
+                <label>Time</label>
+                <input type="time" name="time" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label><input type="checkbox" name="emergency"> Mark as Emergency</label>
+        </div>
+
+        <div style="background: #e8f5e9; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+            <strong>Estimated Total: ₹<span id="totalDisplay">0</span>/hr</strong>
+        </div>
+
+        <button type="submit" class="btn-primary">Confirm Multi-Service Booking</button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1rem;">
+        <a href="{{ url_for('professional_detail', pid=provider_id) }}">← Back to Profile</a>
+    </div>
+</div>
+
+<script>
+const checkboxes = document.querySelectorAll('.svc-checkbox');
+const totalDisplay = document.getElementById('totalDisplay');
+function updateTotal() {
+    let total = 0;
+    checkboxes.forEach(cb => {
+        if (cb.checked) total += parseFloat(cb.dataset.price) || 0;
+    });
+    totalDisplay.textContent = total.toFixed(2);
+}
+checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
+</script>
+{% endblock %}

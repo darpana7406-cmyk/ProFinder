@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Search - ProFinder{% endblock %}
+
+{% block content %}
+<h2>Search Professionals</h2>
+
+<form method="GET" class="filter-form">
+    <input type="text" name="service" placeholder="Service (e.g. Electrician)" value="{{ filters.service or '' }}">
+    <input type="text" name="city" placeholder="City (e.g. Mumbai, Pune)" value="{{ filters.city or '' }}">
+    <select name="category">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.CategoryName }}" {% if filters.category == cat.CategoryName %}selected{% endif %}>
+            {{ cat.CategoryName }}
+        </option>
+        {% endfor %}
+    </select>
+    <input type="number" name="min_price" placeholder="Min ₹/hr" value="{{ filters.min_price or '' }}">
+    <input type="number" name="max_price" placeholder="Max ₹/hr" value="{{ filters.max_price or '' }}">
+    <input type="number" name="min_rating" placeholder="Min Rating" step="0.1" min="0" max="5" value="{{ filters.min_rating or '' }}">
+    <input type="number" name="min_experience" placeholder="Min Years Exp" value="{{ filters.min_experience or '' }}">
+    <select name="sort">
+        <option value="recommended" {% if filters.sort == 'recommended' %}selected{% endif %}>Recommended</option>
+        <option value="rating" {% if filters.sort == 'rating' %}selected{% endif %}>Rating (high → low)</option>
+        <option value="experience" {% if filters.sort == 'experience' %}selected{% endif %}>Experience (high → low)</option>
+        <option value="price_low" {% if filters.sort == 'price_low' %}selected{% endif %}>Price (low → high)</option>
+        <option value="price_high" {% if filters.sort == 'price_high' %}selected{% endif %}>Price (high → low)</option>
+    </select>
+    <button type="submit" class="btn-primary">Apply Filters</button>
+    <a href="{{ url_for('search') }}" style="align-self:center; color:#7f8c8d;">Reset</a>
+</form>
+
+<p style="color: #7f8c8d; margin-bottom: 1rem;">Found <strong>{{ results|length }}</strong> professionals</p>
+
+<div class="results-grid">
+    {% if results %}
+        {% for p in results %}
+        <div class="provider-card">
+            <h3>{{ p.Name }} {% if p.HasReviews %}✅{% endif %}</h3>
+            <p class="rating">
+                ⭐ {{ p.AvgRating }}
+                {% if p.ReviewCount > 0 %}({{ p.ReviewCount }} review{% if p.ReviewCount != 1 %}s{% endif %}){% else %}(new){% endif %}
+            </p>
+            <p><strong>{{ p.ServiceName }}</strong> ({{ p.CategoryName }})</p>
+            <p>📍 {{ p.City }}, {{ p.State }}</p>
+            <p>Experience: {{ p.ExperienceYears }} years</p>
+            <p class="price">₹{{ p.PricePerHour }}/hr</p>
+            <a href="{{ url_for('professional_detail', pid=p.ProviderID) }}" class="btn-primary">View Profile</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 3rem 1rem;">
+            <h3 style="color: #7f8c8d;">No professionals found</h3>
+            <p style="color: #95a5a6; margin: 1rem 0;">Try adjusting your filters or search with different keywords.</p>
+            <a href="{{ url_for('search') }}" class="btn-primary">Clear All Filters</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

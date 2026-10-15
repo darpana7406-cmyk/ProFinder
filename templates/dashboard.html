@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - ProFinder{% endblock %}
+
+{% block content %}
+<h1>{{ role|capitalize }} Dashboard</h1>
+
+{% if role == 'provider' %}
+<div style="margin: 1rem 0;">
+    <a href="{{ url_for('add_service') }}" class="btn-primary">Add / Manage Services</a>
+</div>
+{% endif %}
+
+{% if role == 'customer' %}
+<div style="background: linear-gradient(135deg, #27ae60, #16a085); color: white; padding: 1.5rem; border-radius: 12px; margin: 1rem 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <p style="margin: 0; opacity: 0.9;">Wallet Balance</p>
+        <h2 style="margin: 0; font-size: 2rem;">₹{{ '%.2f' % wallet_balance }}</h2>
+    </div>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <a href="{{ url_for('wallet') }}" class="btn-primary" style="background: white; color: #27ae60;">View Wallet</a>
+        <a href="{{ url_for('wallet_add') }}" class="btn-primary" style="background: #f39c12;">+ Add Money</a>
+    </div>
+</div>
+{% endif %}
+
+{% if role == 'admin' %}
+    <div class="stats-grid">
+        <div class="stat-card"><h3>{{ total_bookings }}</h3><p>Bookings</p></div>
+        <div class="stat-card"><h3>{{ total_providers }}</h3><p>Providers</p></div>
+        <div class="stat-card"><h3>{{ total_customers }}</h3><p>Customers</p></div>
+        <div class="stat-card"><h3>{{ total_reviews }}</h3><p>Reviews</p></div>
+        <div class="stat-card"><h3>{{ pending_reviews }}</h3><p>Pending Reviews</p></div>
+        <div class="stat-card"><h3>{{ total_notifs }}</h3><p>Notifications</p></div>
+        <div class="stat-card"><h3>{{ total_msgs }}</h3><p>Messages</p></div>
+        <div class="stat-card"><h3>{{ total_coupons }}</h3><p>Coupons</p></div>
+        <div class="stat-card"><h3>₹{{ total_wallet }}</h3><p>Wallet Total</p></div>
+    </div>
+
+    <h2>Pending Verifications (showing 20)</h2>
+    {% for p in pending %}
+    <div class="booking-card">
+        <p>Provider ID: {{ p.ProviderID }}</p>
+        <a href="{{ url_for('verify_provider', provider_id=p.ProviderID) }}" class="btn-primary">Verify</a>
+    </div>
+    {% else %}
+        <p>No pending verifications.</p>
+    {% endfor %}
+
+{% else %}
+    <h2>{% if role == 'customer' %}Recent Bookings{% else %}Booking Requests{% endif %}</h2>
+
+    {% if role == 'customer' %}
+    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('favorites') }}" class="btn-primary">Favorites ({{ fav_count }})</a>
+        <a href="{{ url_for('notifications') }}" class="btn-primary">Notifications ({{ notif_count }})</a>
+    </div>
+    {% endif %}
+
+    {% for b in bookings %}
+    <div class="booking-card">
+        <h3>{{ b.ServiceName }}</h3>
+
+        {% if role == 'customer' %}
+            <p><strong>Provider:</strong> {{ b.ProviderName }}</p>
+        {% else %}
+            <p><strong>Customer:</strong> {{ b.CustomerName }}</p>
+            <p style="font-size: 0.9rem; color: #7f8c8d;">
+                📞 {{ b.CustomerPhone }}
+                {% if b.CustomerEmail %} · ✉️ {{ b.CustomerEmail }}{% endif %}
+            </p>
+        {% endif %}
+
+        <p>📅 {{ b.BookingDate }} at {{ b.BookingTime }}</p>
+        <p>Status: <span class="status-{{ b.Status|lower }}">{{ b.Status }}</span>
+            {% if b.IsEmergency %} 🚨 Emergency{% endif %}
+            {% if b.CancelledBy %} (by {{ b.CancelledBy }}){% endif %}
+        </p>
+
+        <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="{{ url_for('booking_detail', bid=b.BookingID) }}" class="btn-primary">View Details</a>
+            <a href="{{ url_for('booking_receipt', bid=b.BookingID) }}" class="btn-primary">🧾 Receipt</a>
+
+            {% if role == 'provider' and b.Status == 'Pending' %}
+                <a href="{{ url_for('accept_booking', bid=b.BookingID) }}" class="btn-primary">✓ Accept</a>
+                <a href="{{ url_for('reject_booking', bid=b.BookingID) }}" class="btn-danger">✗ Reject</a>
+            {% endif %}
+
+            {% if role == 'provider' and b.Status == 'Confirmed' %}
+                <a href="{{ url_for('complete_booking', bid=b.BookingID) }}" class="btn-primary">Mark Completed</a>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <p>No bookings yet.
+        {% if role == 'customer' %}<a href="{{ url_for('search') }}">Find a professional</a>{% endif %}
+    </p>
+    {% endfor %}
+{% endif %}
+{% endblock %}

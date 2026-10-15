@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Manage My Services{% endblock %}
+
+{% block content %}
+<h1>Manage My Services</h1>
+
+<div class="form-container" style="max-width: 700px;">
+    <h2> Add a New Service</h2>
+    {% if available_services %}
+    <form method="POST">
+        <div class="form-group">
+            <label>Select Service</label>
+            <select name="service_type_id" required>
+                <option value="">-- Choose a service --</option>
+                {% for s in available_services %}
+                <option value="{{ s.ServiceTypeID }}">
+                    {{ s.CategoryName }} → {{ s.ServiceName }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Price per Hour (₹)</label>
+            <input type="number" name="price" min="50" step="10" required placeholder="e.g. 500">
+        </div>
+        <button type="submit" class="btn-primary">Add Service</button>
+    </form>
+    {% else %}
+        <p>✅ You've already added all available services!</p>
+    {% endif %}
+</div>
+
+<div style="max-width: 700px; margin: 2rem auto;">
+    <h2>📋 My Services</h2>
+    {% for s in my_services %}
+    <div class="booking-card">
+        <h3>{{ s.ServiceName }}</h3>
+        <p>Category: {{ s.CategoryName }}</p>
+        <p class="price">₹{{ s.PricePerHour }}/hr</p>
+        <a href="{{ url_for('remove_service', psid=s.ProviderServiceID) }}"
+           class="btn-danger" style="margin-top: 0.5rem; display: inline-block;">Remove</a>
+    </div>
+    {% else %}
+    <p>You haven't added any services yet.</p>
+    {% endfor %}
+</div>
+
+<div style="text-align: center; margin: 2rem;">
+    <a href="{{ url_for('dashboard') }}" class="btn-primary">← Back to Dashboard</a>
+</div>
+{% endblock %}

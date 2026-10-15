@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My Bookings - ProFinder{% endblock %}
+
+{% block content %}
+<h1>My Bookings</h1>
+
+{% if bookings %}
+    {% for b in bookings %}
+    <div class="booking-card">
+        <h3>{{ b.ServiceName }}
+            {% if b.ServiceCount > 1 %}
+            <span style="background: #3498db; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem;">+{{ b.ServiceCount - 1 }} more</span>
+            {% endif %}
+        </h3>
+        <p><strong>Provider:</strong> {{ b.ProviderName }} · 📞 {{ b.ProviderPhone }}</p>
+        <p>📅 {{ b.BookingDate }} at {{ b.BookingTime }}</p>
+        <p class="price">
+            ₹{{ b.PricePerHour }}/hr
+            {% if b.TotalPrice %} · Total ₹{{ b.TotalPrice }}{% endif %}
+            {% if b.DiscountApplied and b.DiscountApplied > 0 %}
+                <span style="color: #27ae60; font-weight: bold;">· Saved ₹{{ b.DiscountApplied }} with {{ b.CouponCode }}</span>
+            {% endif %}
+        </p>
+        <p>Status: <span class="status-{{ b.Status|lower }}">{{ b.Status }}</span>
+            {% if b.IsEmergency %} 🚨 Emergency{% endif %}
+            {% if b.CancelledBy %} (by {{ b.CancelledBy }}){% endif %}
+        </p>
+        <div style="margin-top: 0.8rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="{{ url_for('booking_detail', bid=b.BookingID) }}" class="btn-primary">View</a>
+            <a href="{{ url_for('booking_receipt', bid=b.BookingID) }}" class="btn-primary">🧾 Receipt</a>
+            {% if b.Status in ('Pending', 'Confirmed') %}
+            <form action="{{ url_for('cancel_booking', bid=b.BookingID) }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn-danger" onclick="return confirm('Cancel this booking?')">Cancel</button>
+            </form>
+            {% endif %}
+        </div>
+
+        {% if b.Status == 'Completed' %}
+        <form action="{{ url_for('submit_review', booking_id=b.BookingID) }}" method="POST" class="review-form">
+            <select name="rating" required>
+                <option value="5">★★★★★ 5</option>
+                <option value="4">★★★★ 4</option>
+                <option value="3">★★★ 3</option>
+                <option value="2">★★ 2</option>
+                <option value="1">★ 1</option>
+            </select>
+            <input type="text" name="comment" placeholder="Your review..." required>
+            <button type="submit" class="btn-primary">Submit Review</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No bookings yet. <a href="{{ url_for('search') }}">Find a professional</a></p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Referral Report - Admin{% endblock %}
+
+{% block content %}
+<h1>Referral Report</h1>
+
+<div class="stats-grid">
+    <div class="stat-card"><h3>{{ stats.total or 0 }}</h3><p>Total Referrals</p></div>
+    <div class="stat-card"><h3>{{ stats.completed or 0 }}</h3><p>Completed</p></div>
+    <div class="stat-card"><h3>₹{{ '%.0f' % (stats.paid or 0) }}</h3><p>Rewards Paid</p></div>
+</div>
+
+<h2>All Referrals</h2>
+
+{% for r in referrals %}
+<div class="booking-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+            <p style="margin: 0;">
+                <strong>{{ r.ReferrerName }}</strong>
+                {% if r.RefereeName %}
+                    → <strong>{{ r.RefereeName }}</strong>
+                {% elif r.RefereeEmail %}
+                    → <em>{{ r.RefereeEmail }}</em>
+                {% else %}
+                    → Pending
+                {% endif %}
+            </p>
+            <small style="color: #95a5a6;">Code: {{ r.ReferralCode }} · {{ r.CreatedAt }}</small>
+        </div>
+        <div>
+            <span class="status-{% if r.Status == 'completed' %}completed{% elif r.Status == 'pending' %}pending{% else %}cancelled{% endif %}">
+                {{ r.Status|capitalize }}
+            </span>
+            {% if r.Status == 'completed' %}
+            <span style="color: #27ae60; font-weight: bold; margin-left: 0.5rem;">₹{{ r.RewardAmount }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% else %}
+<p>No referrals yet.</p>
+{% endfor %}
+{% endblock %}

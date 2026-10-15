@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ other.Name }} - ProFinder{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="margin: 0;">{{ other.Name }}</h2>
+        <a href="{{ url_for('chat_inbox') }}" class="btn-primary">← Inbox</a>
+    </div>
+
+    <div style="background: #f4f6f9; border-radius: 12px; padding: 1rem; max-height: 500px; overflow-y: auto;" id="chatWindow">
+        {% for m in messages %}
+        <div style="margin-bottom: 0.8rem; text-align: {% if m.SenderID == session.person_id %}right{% else %}left{% endif %};">
+            <div style="display: inline-block; max-width: 70%; padding: 0.6rem 1rem; border-radius: 12px;
+                        background: {% if m.SenderID == session.person_id %}#3498db{% else %}white{% endif %};
+                        color: {% if m.SenderID == session.person_id %}white{% else %}#2c3e50{% endif %};
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.08); text-align: left; position: relative;">
+                {{ m.Body }}
+                <div style="font-size: 0.7rem; margin-top: 0.3rem; opacity: 0.75; display: flex; justify-content: space-between; align-items: center; gap: 0.8rem;">
+                    <span>{{ m.SentAt }}</span>
+                    {% if m.SenderID == session.person_id %}
+                    <form action="{{ url_for('delete_message', msg_id=m.MessageID) }}" method="POST"
+                          style="display: inline; margin: 0;"
+                          onsubmit="return confirm('Delete this message?')">
+                        <input type="hidden" name="other_person_id" value="{{ other_person_id }}">
+                        <button type="submit"
+                                style="background: none; border: none; color: inherit; opacity: 0.85;
+                                       cursor: pointer; font-size: 0.75rem; padding: 0; text-decoration: underline;"
+                                title="Delete message">Delete</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% if not messages %}
+            <p style="text-align: center; color: #95a5a6; padding: 2rem;">No messages yet. Say hello!</p>
+        {% endif %}
+    </div>
+
+    <form method="POST" style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <input type="text" name="body" placeholder="Type a message..." required
+               style="flex: 1; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+        <button type="submit" class="btn-primary">Send</button>
+    </form>
+</div>
+
+<script>
+    const chatWindow = document.getElementById('chatWindow');
+    if (chatWindow) chatWindow.scrollTop = chatWindow.scrollHeight;
+</script>
+{% endblock %}

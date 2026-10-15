@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Referrals - ProFinder{% endblock %}
+
+{% block content %}
+<h1>Referrals</h1>
+<p style="color: #7f8c8d;">Invite friends — you both get ₹100 when they sign up!</p>
+
+<div style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 2rem; border-radius: 12px; margin: 1.5rem 0;">
+    <p style="margin: 0; opacity: 0.9;">Your Referral Code</p>
+    <h2 style="margin: 0.5rem 0; font-family: monospace; letter-spacing: 3px;">{{ code }}</h2>
+    <p style="margin: 0; font-size: 0.9rem;">Share this code or link with friends</p>
+    <div style="margin-top: 1rem; background: rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 8px; word-break: break-all; font-size: 0.85rem;">
+        <strong>Link:</strong> {{ request.host_url }}referrals/claim/{{ code }}
+    </div>
+</div>
+
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+    <div class="stat-card"><h3>{{ stats.total or 0 }}</h3><p>Total Invites</p></div>
+    <div class="stat-card"><h3>{{ stats.completed or 0 }}</h3><p>Completed</p></div>
+    <div class="stat-card"><h3>₹{{ '%.0f' % (stats.earned or 0) }}</h3><p>Earned</p></div>
+</div>
+
+<h2>Invite a Friend</h2>
+<div class="form-container" style="max-width: 600px; margin: 1rem 0;">
+    <form method="POST" action="{{ url_for('referral_invite') }}">
+        <div class="form-group">
+            <label>Friend's Email</label>
+            <input type="email" name="email" required placeholder="friend@example.com">
+        </div>
+        <button type="submit" class="btn-primary">Send Invite</button>
+    </form>
+</div>
+
+<h2>My Referrals</h2>
+
+{% if my_referrals %}
+    {% for r in my_referrals %}
+    <div class="booking-card" style="border-left: 4px solid {% if r.Status == 'completed' %}#27ae60{% else %}#f39c12{% endif %};">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <p style="margin: 0;">
+                    <strong>{{ r.RefereeName or r.RefereeEmail or 'Pending' }}</strong>
+                </p>
+                <small style="color: #95a5a6;">Invited on {{ r.CreatedAt }}</small>
+            </div>
+            <div style="text-align: right;">
+                <span class="status-{% if r.Status == 'completed' %}completed{% elif r.Status == 'pending' %}pending{% else %}cancelled{% endif %}">
+                    {{ r.Status|capitalize }}
+                </span>
+                {% if r.Status == 'completed' %}
+                <p style="margin: 0.3rem 0 0; color: #27ae60; font-weight: bold;">+₹{{ r.RewardAmount }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<p style="text-align: center; color: #95a5a6; padding: 2rem;">No referrals yet. Share your code!</p>
+{% endif %}
+{% endblock %}

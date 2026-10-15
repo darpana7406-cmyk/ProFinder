@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Contact {{ provider.Name }} - ProFinder{% endblock %}
+
+{% block content %}
+<div class="form-container" style="max-width: 600px;">
+    <h2>Contact {{ provider.Name }}</h2>
+
+    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
+        <p><strong>📞 Phone:</strong> <a href="tel:{{ provider.Phone }}">{{ provider.Phone }}</a></p>
+        <p style="margin-top: 0.5rem;"><strong>✉️ Email:</strong> <a href="mailto:{{ email }}">{{ email }}</a></p>
+        <p style="margin-top: 0.5rem;"><strong>📍 Location:</strong> {{ provider.City }}, {{ provider.State }}</p>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Quick Message</h3>
+    <p style="color: #7f8c8d; font-size: 0.9rem;">Click below to open your email client with a pre-filled message.</p>
+
+    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <a href="mailto:{{ email }}?subject=Inquiry%20from%20ProFinder&body=Hi%20{{ provider.Name }}%2C%0A%0AI%20am%20interested%20in%20your%20services.%20Please%20let%20me%20know%20your%20availability."
+           class="btn-primary">✉️ Send Email</a>
+        <a href="tel:{{ provider.Phone }}" class="btn-primary">📞 Call Now</a>
+    </div>
+
+    <div style="text-align: center; margin: 2rem 0;">
+        <a href="{{ url_for('professional_detail', pid=provider.ProviderID) }}">← Back to Profile</a>
+    </div>
+</div>
+{% endblock %}

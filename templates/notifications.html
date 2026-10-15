@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Notifications - ProFinder{% endblock %}
+
+{% block content %}
+<h1>Notifications</h1>
+<p style="color: #7f8c8d;">Your recent activity and updates.</p>
+
+{% for n in notifications %}
+<div class="booking-card" style="border-left: 4px solid {% if n.Status == 'sent' %}#27ae60{% elif n.Status == 'failed' %}#e74c3c{% else %}#f39c12{% endif %};">
+    <h3>{{ n.Subject }}</h3>
+    <p>{{ n.Body }}</p>
+    <small style="color: #95a5a6;">
+        {{ n.SentAt }}
+        {% if n.BookingID %} · Booking #{{ n.BookingID }}{% endif %}
+        · {% if n.Status == 'sent' %}Sent{% elif n.Status == 'failed' %}Failed{% else %}Pending{% endif %}
+    </small>
+</div>
+{% else %}
+<div style="text-align: center; padding: 3rem 1rem;">
+    <h3 style="color: #7f8c8d;">No notifications yet</h3>
+    <p style="color: #95a5a6; margin: 1rem 0;">You'll see booking updates and messages here.</p>
+</div>
+{% endfor %}
+{% endblock %}
